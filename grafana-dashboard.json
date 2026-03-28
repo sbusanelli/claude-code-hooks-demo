@@ -1,0 +1,678 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "#5794F2",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ],
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+      "gnetId": null,
+      "graphTooltip": 0,
+      "id": null,
+      "links": [],
+      "liveNow": false,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${PROMETHEUS_DATASOURCE_UID}"
+          },
+          "gridPos": {
+            "h": 0,
+            "v": 0,
+            "w": 12,
+            "x": 0
+          },
+          "id": "server-overview",
+          "targets": [
+            {
+              "expr": "mcp_server_uptime",
+              "legendFormat": "Uptime: {{value}}s",
+              "refId": "A"
+            },
+            {
+              "expr": "rate(mcp_server_requests_total[5m])",
+              "legendFormat": "Requests/sec",
+              "refId": "B"
+            },
+            {
+              "expr": "rate(mcp_server_errors_total[5m])",
+              "legendFormat": "Errors/sec",
+              "refId": "C"
+            },
+            {
+              "expr": "rate(mcp_server_requests_total[5m]) > 0",
+              "legendFormat": "Error Rate",
+              "refId": "D"
+            }
+          ],
+          "title": "Server Overview",
+          "type": "stat",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "displayMode": "list",
+                "listOptions": {
+                  "valueMode": "color-background"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 0
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": {
+              "A": {
+                "color": {
+                  "fixed": "blue"
+                },
+                "custom": {
+                  "displayMode": "gradient-gauge",
+                  "orientation": "horizontal"
+                },
+                "mappings": [
+                  {
+                    "options": {
+                      "max": 100,
+                      "min": 0
+                    },
+                    "type": "value"
+                  }
+                ],
+                "unit": "s"
+              },
+              "B": {
+                "color": {
+                  "fixed": "green"
+                },
+                "custom": {
+                  "displayMode": "gradient-gauge",
+                  "orientation": "horizontal"
+                },
+                "mappings": [
+                  {
+                    "options": {
+                      "max": 10,
+                      "min": 0
+                    },
+                    "type": "value"
+                  }
+                ],
+                "unit": "reqps"
+              },
+              "C": {
+                "color": {
+                  "fixed": "orange"
+                },
+                "custom": {
+                  "displayMode": "gradient-gauge",
+                  "orientation": "horizontal"
+                },
+                "mappings": [
+                  {
+                    "options": {
+                      "max": 100,
+                      "min": 0
+                    },
+                    "type": "value"
+                  }
+                ],
+                "unit": "percent"
+              },
+              "D": {
+                "color": {
+                  "fixed": "red"
+                },
+                "custom": {
+                  "displayMode": "gradient-gauge",
+                  "orientation": "horizontal"
+                },
+                "mappings": [
+                  {
+                    "options": {
+                      "max": 100,
+                      "min": 0
+                    },
+                    "type": "value"
+                  }
+                ],
+                "unit": "percent"
+              }
+            }
+          },
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${PROMETHEUS_DATASOURCE_UID}"
+          },
+          "gridPos": {
+            "h": 1,
+            "v": 0,
+            "w": 12,
+            "x": 0
+          },
+          "id": "user-management",
+          "targets": [
+            {
+              "expr": "user_registrations_total",
+              "legendFormat": "Total Registrations",
+              "refId": "A"
+            },
+            {
+              "expr": "rate(user_registrations_total[5m])",
+              "legendFormat": "Registrations/sec",
+              "refId": "B"
+            },
+            {
+              "expr": "user_login_attempts_total",
+              "legendFormat": "Login Attempts",
+              "refId": "C"
+            },
+            {
+              "expr": "user_login_success_total",
+              "legendFormat": "Successful Logins",
+              "refId": "D"
+            },
+            {
+              "expr": "user_login_success_total / user_login_attempts_total",
+              "legendFormat": "Success Rate",
+              "refId": "E"
+            },
+            {
+              "expr": "user_database_size",
+              "legendFormat": "Database Size",
+              "refId": "F"
+            }
+          ],
+          "title": "User Management",
+          "type": "stat",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "displayMode": "list",
+                "listOptions": {
+                  "valueMode": "color-background"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 0
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": {
+              "A": {
+                "color": {
+                  "fixed": "purple"
+                },
+                "custom": {
+                  "displayMode": "gradient-gauge",
+                  "orientation": "horizontal"
+                },
+                "mappings": [
+                  {
+                    "options": {
+                      "max": 100,
+                      "min": 0
+                    },
+                    "type": "value"
+                  }
+                ],
+                "unit": "short"
+              },
+              "B": {
+                "color": {
+                  "fixed": "green"
+                },
+                "custom": {
+                  "displayMode": "gradient-gauge",
+                  "orientation": "horizontal"
+                },
+                "mappings": [
+                  {
+                    "options": {
+                      "max": 10,
+                      "min": 0
+                    },
+                    "type": "value"
+                  }
+                ],
+                "unit": "reqps"
+              },
+              "C": {
+                "color": {
+                  "fixed": "blue"
+                },
+                "custom": {
+                  "displayMode": "gradient-gauge",
+                  "orientation": "horizontal"
+                },
+                "mappings": [
+                  {
+                    "options": {
+                      "max": 100,
+                      "min": 0
+                    },
+                    "type": "value"
+                  }
+                ],
+                "unit": "short"
+              },
+              "D": {
+                "color": {
+                  "fixed": "green"
+                },
+                "custom": {
+                  "displayMode": "gradient-gauge",
+                  "orientation": "horizontal"
+                },
+                "mappings": [
+                  {
+                    "options": {
+                      "max": 100,
+                      "min": 0
+                    },
+                    "type": "value"
+                  }
+                ],
+                "unit": "short"
+              },
+              "E": {
+                "color": {
+                  "fixed": "orange"
+                },
+                "custom": {
+                  "displayMode": "gradient-gauge",
+                  "orientation": "horizontal"
+                },
+                "mappings": [
+                  {
+                    "options": {
+                      "max": 100,
+                      "min": 0
+                    },
+                    "type": "value"
+                  }
+                ],
+                "unit": "short"
+              },
+              "F": {
+                "color": {
+                  "fixed": "red"
+                },
+                "custom": {
+                  "displayMode": "gradient-gauge",
+                  "orientation": "horizontal"
+                },
+                "mappings": [
+                  {
+                    "options": {
+                      "max": 100,
+                      "min": 0
+                    },
+                    "type": "value"
+                  }
+                ],
+                "unit": "short"
+              }
+            }
+          },
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${PROMETHEUS_DATASOURCE_UID}"
+          },
+          "gridPos": {
+            "h": 2,
+            "v": 0,
+            "w": 12,
+            "x": 0
+          },
+          "id": "performance-metrics",
+          "targets": [
+            {
+              "expr": "rate(api_requests_total[5m])",
+              "legendFormat": "API Requests/sec",
+              "refId": "A"
+            },
+            {
+              "expr": "rate(mcp_server_request_duration_seconds_sum[5m]) / rate(mcp_server_request_duration_seconds_count[5m])",
+              "legendFormat": "Avg MCP Response Time",
+              "refId": "B"
+            },
+            {
+              "expr": "rate(api_request_duration_seconds_sum[5m]) / rate(api_request_duration_seconds_count[5m])",
+              "legendFormat": "Avg API Response Time",
+              "refId": "C"
+            },
+            {
+              "expr": "histogram_quantile(0.95, rate(mcp_server_request_duration_seconds_bucket[5m]))",
+              "legendFormat": "95th Percentile MCP",
+              "refId": "D"
+            },
+            {
+              "expr": "histogram_quantile(0.95, rate(api_request_duration_seconds_bucket[5m]))",
+              "legendFormat": "95th Percentile API",
+              "refId": "E"
+            }
+          ],
+          "title": "Performance Metrics",
+          "type": "stat",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "displayMode": "list",
+                "listOptions": {
+                  "valueMode": "color-background"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 1
+                  },
+                  {
+                    "color": "red",
+                    "value": 2
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": {
+              "A": {
+                "color": {
+                  "fixed": "blue"
+                },
+                "custom": {
+                  "displayMode": "gradient-gauge",
+                  "orientation": "horizontal"
+                },
+                "mappings": [
+                  {
+                    "options": {
+                      "max": 10,
+                      "min": 0
+                    },
+                    "type": "value"
+                  }
+                ],
+                "unit": "reqps"
+              },
+              "B": {
+                "color": {
+                  "fixed": "green"
+                },
+                "custom": {
+                  "displayMode": "gradient-gauge",
+                  "orientation": "horizontal"
+                },
+                "mappings": [
+                  {
+                    "options": {
+                      "max": 5,
+                      "min": 0
+                    },
+                    "type": "value"
+                  }
+                ],
+                "unit": "s"
+              },
+              "C": {
+                "color": {
+                  "fixed": "orange"
+                },
+                "custom": {
+                  "displayMode": "gradient-gauge",
+                  "orientation": "horizontal"
+                },
+                "mappings": [
+                  {
+                    "options": {
+                      "max": 5,
+                      "min": 0
+                    },
+                    "type": "value"
+                  }
+                ],
+                "unit": "s"
+              },
+              "D": {
+                "color": {
+                  "fixed": "red"
+                },
+                "custom": {
+                  "displayMode": "gradient-gauge",
+                  "orientation": "horizontal"
+                },
+                "mappings": [
+                  {
+                    "options": {
+                      "max": 5,
+                      "min": 0
+                    },
+                    "type": "value"
+                  }
+                ],
+                "unit": "s"
+              },
+              "E": {
+                "color": {
+                  "fixed": "purple"
+                },
+                "custom": {
+                  "displayMode": "gradient-gauge",
+                  "orientation": "horizontal"
+                },
+                "mappings": [
+                  {
+                    "options": {
+                      "max": 5,
+                      "min": 0
+                    },
+                    "type": "value"
+                  }
+                ],
+                "unit": "s"
+              }
+            }
+          },
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${PROMETHEUS_DATASOURCE_UID}"
+          },
+          "gridPos": {
+            "h": 3,
+            "v": 0,
+            "w": 12,
+            "x": 0
+          },
+          "id": "active-users",
+          "targets": [
+            {
+              "expr": "user_database_size",
+              "legendFormat": "Total Users",
+              "refId": "A"
+            },
+            {
+              "expr": "rate(user_registrations_total[1h])",
+              "legendFormat": "New Users/hour",
+              "refId": "B"
+            },
+            {
+              "expr": "rate(user_login_success_total[1h])",
+              "legendFormat": "Active Logins/hour",
+              "refId": "C"
+            }
+          ],
+          "title": "Active Users Overview",
+          "type": "stat",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "displayMode": "list",
+                "listOptions": {
+                  "valueMode": "color-background"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 0
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": {
+              "A": {
+                "color": {
+                  "fixed": "green"
+                },
+                "custom": {
+                  "displayMode": "gradient-gauge",
+                  "orientation": "horizontal"
+                },
+                "mappings": [
+                  {
+                    "options": {
+                      "max": 100,
+                      "min": 0
+                    },
+                    "type": "value"
+                  }
+                ],
+                "unit": "short"
+              },
+              "B": {
+                "color": {
+                  "fixed": "blue"
+                },
+                "custom": {
+                  "displayMode": "gradient-gauge",
+                  "orientation": "horizontal"
+                },
+                "mappings": [
+                  {
+                    "options": {
+                      "max": 50,
+                      "min": 0
+                    },
+                    "type": "value"
+                  }
+                ],
+                "unit": "short"
+              },
+              "C": {
+                "color": {
+                  "fixed": "purple"
+                },
+                "custom": {
+                  "displayMode": "gradient-gauge",
+                  "orientation": "horizontal"
+                },
+                "mappings": [
+                  {
+                    "options": {
+                      "max": 10,
+                      "min": 0
+                    },
+                    "type": "value"
+                  }
+                ],
+                "unit": "short"
+              }
+            }
+          },
+          "type": "stat"
+        }
+      ],
+      "refresh": "5s",
+      "schemaVersion": 27,
+      "tags": ["mcp-server", "user-management", "monitoring"],
+      "templating": {
+        "list": [
+          {
+            "current": {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${PROMETHEUS_DATASOURCE_UID}"
+              },
+              "name": "MCP Server Status",
+              "query": "mcp_server_uptime",
+              "transform": "timeseries",
+              "type": "stat"
+            }
+        ]
+      },
+      "time": {
+        "from": "now-1h",
+        "to": "now"
+      },
+      "timezone": "",
+      "title": "MCP Server Monitoring Dashboard",
+      "uid": "${DASHBOARD_UID}"
+    },
+    "overwrite": true
+}
