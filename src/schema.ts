@@ -1,8 +1,8 @@
-import { Database } from "sqlite";
+import Database from "better-sqlite3";
 
-export async function createSchema(db: Database) {
+export function createSchema(db: Database.Database) {
   // 1. Customers table
-  await db.exec(`
+  db.exec(`
     CREATE TABLE IF NOT EXISTS customers (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         email TEXT UNIQUE NOT NULL,
@@ -17,7 +17,7 @@ export async function createSchema(db: Database) {
     `);
 
   // 2. Addresses table
-  await db.exec(`
+  db.exec(`
     CREATE TABLE IF NOT EXISTS addresses (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         customer_id INTEGER NOT NULL,
@@ -35,7 +35,7 @@ export async function createSchema(db: Database) {
     `);
 
   // 3. Categories table
-  await db.exec(`
+  db.exec(`
     CREATE TABLE IF NOT EXISTS categories (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT UNIQUE NOT NULL,
@@ -48,7 +48,7 @@ export async function createSchema(db: Database) {
     `);
 
   // 4. Products table
-  await db.exec(`
+  db.exec(`
     CREATE TABLE IF NOT EXISTS products (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         sku TEXT UNIQUE NOT NULL,
@@ -66,7 +66,7 @@ export async function createSchema(db: Database) {
     `);
 
   // 5. Inventory table
-  await db.exec(`
+  db.exec(`
     CREATE TABLE IF NOT EXISTS inventory (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         product_id INTEGER NOT NULL,
@@ -82,7 +82,7 @@ export async function createSchema(db: Database) {
     `);
 
   // 6. Warehouses table
-  await db.exec(`
+  db.exec(`
     CREATE TABLE IF NOT EXISTS warehouses (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         code TEXT UNIQUE NOT NULL,
@@ -95,7 +95,7 @@ export async function createSchema(db: Database) {
     `);
 
   // 7. Orders table
-  await db.exec(`
+  db.exec(`
     CREATE TABLE IF NOT EXISTS orders (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         order_number TEXT UNIQUE NOT NULL,
@@ -117,7 +117,7 @@ export async function createSchema(db: Database) {
     `);
 
   // 8. Order items table
-  await db.exec(`
+  db.exec(`
     CREATE TABLE IF NOT EXISTS order_items (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         order_id INTEGER NOT NULL,
@@ -133,7 +133,7 @@ export async function createSchema(db: Database) {
     `);
 
   // 9. Reviews table
-  await db.exec(`
+  db.exec(`
     CREATE TABLE IF NOT EXISTS reviews (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         product_id INTEGER NOT NULL,
@@ -153,7 +153,7 @@ export async function createSchema(db: Database) {
     `);
 
   // 10. Customer segments table
-  await db.exec(`
+  db.exec(`
     CREATE TABLE IF NOT EXISTS customer_segments (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         customer_id INTEGER NOT NULL,
@@ -166,7 +166,7 @@ export async function createSchema(db: Database) {
     `);
 
   // 11. Promotions table
-  await db.exec(`
+  db.exec(`
     CREATE TABLE IF NOT EXISTS promotions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         code TEXT UNIQUE NOT NULL,
@@ -183,7 +183,7 @@ export async function createSchema(db: Database) {
     `);
 
   // 12. Customer activity log table
-  await db.exec(`
+  db.exec(`
     CREATE TABLE IF NOT EXISTS customer_activity_log (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         customer_id INTEGER NOT NULL,

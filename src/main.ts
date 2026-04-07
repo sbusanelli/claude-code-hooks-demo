@@ -1,5 +1,4 @@
-import { open } from "sqlite";
-import sqlite3 from "sqlite3";
+import Database from "better-sqlite3";
 
 import { createSchema } from "./schema";
 import * as customerQueries from "./queries/customer_queries";
@@ -12,13 +11,10 @@ import * as reviewQueries from "./queries/review_queries";
 import * as shippingQueries from "./queries/shipping_queries";
 
 async function main() {
-  const db = await open({
-    filename: process.env.DB_FILENAME || "ecommerce.db",
-    driver: sqlite3.Database,
-  });
+  const db = new Database(process.env.DB_FILENAME || "ecommerce.db");
 
   console.log("🗄️  Creating database schema...");
-  await createSchema(db);
+  createSchema(db);
   console.log("✅ Database schema created successfully");
 
   // Example usage of query functions

@@ -17,9 +17,11 @@ This repository is a **demonstration project** showcasing Claude Code hooks func
 
 2. **⚠️ Dependency Vulnerabilities**
    - **Count**: 7 vulnerabilities (2 low, 5 high severity)
-   - **Affected**: `tar`, `@tootallnate/once` packages
-   - **Status**: Documented for transparency
-   - **Impact**: Does not affect core demo functionality
+   - **Affected**: Transitive dependencies in `sqlite3` build chain
+   - **Root Cause**: Legacy build dependencies (`node-gyp`, `request`, `tar`, `semver`)
+   - **Status**: Difficult to fix without breaking changes
+   - **Impact**: Build-time only, no runtime security risks
+   - **Note**: Common issue with native Node.js addons
 
 ---
 

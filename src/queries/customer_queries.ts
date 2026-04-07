@@ -1,4 +1,4 @@
-import { Database } from "sqlite";
+import Database from "better-sqlite3";
 
 interface Address {
   address_id: number;
@@ -12,10 +12,10 @@ interface Address {
   [key: string]: any;
 }
 
-export async function getCustomerByEmail(
-  db: Database,
+export function getCustomerByEmail(
+  db: Database.Database,
   email: string
-): Promise<any> {
+): any {
   const query = `
     SELECT 
         c.*,
