@@ -1,0 +1,46 @@
+{
+  "name": "claude-code-hooks-usage-demo",
+  "version": "1.0.0",
+  "description": "Claude Code hooks usage demo with e-commerce data utilities and secret protection",
+  "main": "dist/main.js",
+  "scripts": {
+    "setup": "npm install && node ./scripts/init-claude.js",
+    "build": "tsc",
+    "start": "npm run build && node dist/main.js",
+    "dev": "tsx src/main.ts",
+    "example": "tsx src/example.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "sdk": "tsx sdk.ts",
+    "clean": "rm -rf dist",
+    "lint": "echo \"Linting not configured\"",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "claude-code",
+    "hooks",
+    "security",
+    "ecommerce",
+    "sqlite",
+    "typescript"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.1.5",
+    "@tootallnate/once": "^3.0.1",
+    "@types/node": "^24.0.13",
+    "brace-expansion": "^5.0.5",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7",
+    "tar": "^7.5.13",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+  },
+  "devDependencies": {
+    "@types/sqlite3": "^3.1.8"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
