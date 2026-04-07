@@ -1,0 +1,51 @@
+node_modules
+post-log.json
+pre-log.json
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Secret files and certificates
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.pem
+
+# Cloud provider credentials
+.aws/
+.azure/
+.gcp/
+
+# Database credentials
+.pgpass
+.my.cnf
+
+# SSH keys
+.ssh/
+.ssh/id_*
+
+# Vault
+.vault/
+
+# Terraform
+*.tfvars
+*.tfstate
+*.tfstate.*
+
+# Secret directories
+secrets/
+private/
+credentials/
+
+# Config files with secrets
+config/*.json
+config/*.yml
+config/*.yaml
+
+# Log files with potential sensitive data
+*.log
+logs/
