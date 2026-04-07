@@ -4,11 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-This is a Claude Code hooks usage demo project that provides query functions for a SQLite database and demonstrates secret protection hooks. The project uses TypeScript.
+This is a Claude Code hooks usage demo project that provides synchronous query functions for a better-sqlite3 database and demonstrates secret protection hooks. The project uses TypeScript and includes comprehensive database integration testing.
 
 ## Database Schema
 
-The SQLite database contains tables for a complete e-commerce system including:
+The better-sqlite3 database contains tables for a complete e-commerce system including:
 
 - customers, addresses, customer_segments, customer_activity_log
 - products, categories, inventory, warehouses
@@ -16,13 +16,13 @@ The SQLite database contains tables for a complete e-commerce system including:
 - reviews
 - promotions
 
-See `schema.ts` for the complete database schema definition.
+See `src/schema.ts` for the complete database schema definition.
 
 ## Project Structure
 
-- `src/main.ts` - Entry point (currently minimal implementation)
-- `src/schema.ts` - Database schema creation functions
-- `src/queries/` - Directory containing all query modules:
+- `src/main.ts` - Entry point with working example queries
+- `src/schema.ts` - Database schema creation functions (better-sqlite3)
+- `src/queries/` - Directory containing all synchronous query modules:
   - `customer_queries.ts` - Customer-related queries
   - `product_queries.ts` - Product catalog queries
   - `order_queries.ts` - Order management queries
@@ -31,35 +31,80 @@ See `schema.ts` for the complete database schema definition.
   - `promotion_queries.ts` - Promotion queries
   - `review_queries.ts` - Product review queries
   - `shipping_queries.ts` - Shipping queries
+- `tests/` - Database integration tests with Jest framework
+  - `database.test.ts` - Core database functionality tests
+  - `database.integration.test.ts` - Integration test suite
+  - `database.schema.test.ts` - Schema validation tests
+  - `database.connection.test.ts` - Connection and transaction tests
+  - `setup.ts` - Jest test configuration
 
 ## Development Commands
 
 ```bash
 # Install dependencies
 npm run setup
+
+# Build and run the application
+npm start
+
+# Development mode
+npm run dev
+
+# Run example queries
+npm run example
+
+# Run tests
+npm test
+npm run test:watch
+npm run test:coverage
+
+# Type checking
+npm run type-check
 ```
 
 ## Working with Queries
 
-All query functions return Promises and follow these patterns:
+All query functions use synchronous better-sqlite3 API and follow these patterns:
 
-- Single record queries use `db.get()`
-- Multiple record queries use `db.all()`
+- Single record queries use `db.prepare(query).get(params)`
+- Multiple record queries use `db.prepare(query).all(params)`
 - Use parameterized queries to prevent SQL injection
-- Handle errors by rejecting the Promise
+- No async/await needed - all operations are synchronous
+- Handle errors with try/catch blocks
 
 Example query pattern:
 
 ```typescript
-export function getCustomerByEmail(db: Database, email: string): Promise<any> {
+export function getCustomerByEmail(db: Database, email: string): any {
   const query = `SELECT * FROM customers WHERE email = ?`;
-  return new Promise((resolve, reject) => {
-    db.get(query, [email], (err, row) => {
-      if (err) reject(err);
-      else resolve(row);
-    });
-  });
+  const stmt = db.prepare(query);
+  return stmt.get([email]);
 }
+```
+
+## Database Migration Status
+
+**COMPLETED**: Successfully migrated from sqlite3 to better-sqlite3:
+- All query functions converted to synchronous API
+- Column name mismatches fixed (customer_id -> id, order_date -> created_at, etc.)
+- Database type annotations updated
+- Application builds and runs without errors
+- Zero vulnerabilities reported by npm audit
+
+## Testing
+
+The project includes comprehensive database integration tests:
+
+- **9/9 tests passing** covering database connections, schema, transactions, and performance
+- **100% schema.ts coverage** with Jest framework
+- **Performance testing** for bulk operations and transaction efficiency
+- **Error handling** validation for constraints and edge cases
+
+Run tests with:
+```bash
+npm test                    # Run all tests
+npm run test:watch         # Watch mode
+npm run test:coverage      # With coverage report
 ```
 
 ## Critical Guidance

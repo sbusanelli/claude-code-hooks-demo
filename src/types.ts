@@ -186,4 +186,4 @@ export type QueryResult<T> = Promise<T | null>;
 export type QueryArrayResult<T> = Promise<T[]>;
 
 // Database connection type
-export type Database = import('sqlite').Database;
+export type Database = any;

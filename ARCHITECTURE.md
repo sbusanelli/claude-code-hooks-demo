@@ -109,7 +109,7 @@ graph LR
     BLOCK --> ERROR
 ```
 
-## 📊 Data Flow Architecture
+##  Data Flow Architecture
 
 ```mermaid
 graph TD
@@ -117,6 +117,7 @@ graph TD
         ENTRY1[npm run dev]
         ENTRY2[npm run example]
         ENTRY3[npm run start]
+        ENTRY4[npm test]
     end
     
     subgraph "Core Application"
@@ -127,7 +128,7 @@ graph TD
     subgraph "Database Layer"
         SCHEMALAYER[schema.ts]
         QUERYLAYER[queries/*.ts]
-        DBLAYER[(SQLite Database)]
+        DBLAYER[(better-sqlite3 Database)]
     end
     
     subgraph "Query Categories"
@@ -141,9 +142,16 @@ graph TD
         SHIP[shipping_queries.ts]
     end
     
+    subgraph "Testing Layer"
+        TESTSUITE[tests/database.test.ts]
+        JEST[Jest Configuration]
+        COVERAGE[Coverage Reports]
+    end
+    
     ENTRY1 --> MAINAPP
     ENTRY2 --> EXAMPLEAPP
     ENTRY3 --> MAINAPP
+    ENTRY4 --> TESTSUITE
     
     MAINAPP --> SCHEMALAYER
     EXAMPLEAPP --> SCHEMALAYER
@@ -159,6 +167,10 @@ graph TD
     QUERYLAYER --> PROM
     QUERYLAYER --> REV
     QUERYLAYER --> SHIP
+    
+    TESTSUITE --> DBLAYER
+    TESTSUITE --> JEST
+    JEST --> COVERAGE
 ```
 
 ## 🛡️ Security Pattern Detection
@@ -206,40 +218,50 @@ graph TB
 
 ```
 claude-code-hooks-usage-demo/
-├── 📁 .claude/                    # Claude Code configuration
-│   ├── 📄 settings.example.json   # Hook configuration template
-│   └── 📄 settings.local.json    # Active hook settings
-│
-├── 📁 hooks/                     # Security hook implementations
-│   ├── 🔒 read_hook.js          # Blocks reading secret files
-│   ├── 🛡️ write_hook.js         # Blocks writing secret content
-│   ├── 🔍 query_hook.js          # Prevents duplicate queries
-│   └── ⚙️ tsc.js               # TypeScript compilation hook
-│
-├── 📁 src/                       # Application source code
-│   ├── 🚀 main.ts              # Application entry point
-│   ├── 📚 example.ts            # Usage examples
-│   ├── 🏗️ schema.ts             # Database schema
-│   ├── 📋 types.ts              # TypeScript interfaces
-│   └── 📁 queries/              # Database query modules
-│       ├── 👥 customer_queries.ts
-│       ├── 🛍️ product_queries.ts
-│       ├── 📦 order_queries.ts
-│       ├── 📊 analytics_queries.ts
-│       ├── 📦 inventory_queries.ts
-│       ├── 🎫 promotion_queries.ts
-│       ├── ⭐ review_queries.ts
-│       └── 🚚 shipping_queries.ts
-│
-├── 📁 scripts/                   # Utility scripts
-│   └── 🔧 init-claude.js       # Hook setup script
-│
-├── 📄 .env.example              # Environment template
-├── 📄 .gitignore               # Git ignore rules
-├── 📄 package.json             # Project configuration
-├── 📄 tsconfig.json            # TypeScript config
-├── 📖 README.md                # Project documentation
-└── 📋 CLAUDE.md                # Claude Code guidance
+|--  .claude/                    # Claude Code configuration
+|   |--  settings.example.json   # Hook configuration template
+|   |--  settings.local.json    # Active hook settings
+|
+|--  hooks/                     # Security hook implementations
+|   |--  read_hook.js          # Blocks reading secret files
+|   |--  write_hook.js         # Blocks writing secret content
+|   |--  query_hook.js          # Prevents duplicate queries
+|   |--  tsc.js               # TypeScript compilation hook
+|
+|--  src/                       # Application source code
+|   |--  main.ts              # Application entry point
+|   |--  example.ts            # Usage examples
+|   |--  schema.ts             # Database schema (better-sqlite3)
+|   |--  types.ts              # TypeScript interfaces
+|   |--  queries/              # Database query modules (synchronous)
+|       |--  customer_queries.ts
+|       |--  product_queries.ts
+|       |--  order_queries.ts
+|       |--  analytics_queries.ts
+|       |--  inventory_queries.ts
+|       |--  promotion_queries.ts
+|       |--  review_queries.ts
+|       |--  shipping_queries.ts
+|
+|--  tests/                     # Database integration tests
+|   |--  database.test.ts      # Core database tests
+|   |--  database.integration.test.ts
+|   |--  database.schema.test.ts
+|   |--  database.connection.test.ts
+|   |--  setup.ts              # Jest test setup
+|
+|--  scripts/                   # Utility scripts
+|   |--  init-claude.js       # Hook setup script
+|
+|--  jest.config.cjs           # Jest configuration
+|--  .env.example              # Environment template
+|--  .gitignore               # Git ignore rules (updated)
+|--  package.json             # Project configuration (with test scripts)
+|--  tsconfig.json            # TypeScript config
+|--  README.md                # Project documentation
+|--  CLAUDE.md                # Claude Code guidance
+|--  ARCHITECTURE.md          # Architecture documentation
+|--  SECURITY_NOTICE.md        # Security information
 ```
 
 ## 🔄 Hook Execution Flow
@@ -295,9 +317,11 @@ sequenceDiagram
 | **Security** | `hooks/write_hook.js` | Blocks secret content writing |
 | **Security** | `hooks/query_hook.js` | Prevents duplicate queries |
 | **Application** | `src/main.ts` | Demo entry point |
-| **Data** | `src/queries/` | Business logic & data access |
+| **Data** | `src/queries/` | Synchronous business logic & data access |
 | **Types** | `src/types.ts` | Type safety & interfaces |
-| **Database** | `SQLite` | Data persistence layer |
+| **Database** | `better-sqlite3` | Modern data persistence layer |
+| **Testing** | `tests/database.test.ts` | Database integration validation |
+| **Testing** | `Jest` | Test framework & coverage |
 
 ## 🚀 Deployment Architecture
 

@@ -1,4 +1,6 @@
-import { Database } from "sqlite";
+import Database from "better-sqlite3";
+
+type DbType = any;
 
 interface OrderItem {
   order_item_id: number;
@@ -21,10 +23,10 @@ interface OrderDetails {
   items: OrderItem[];
 }
 
-export async function getOrderDetails(
-  db: Database,
+export function getOrderDetails(
+  db: DbType,
   orderId: number
-): Promise<OrderDetails | null> {
+) {
   const query = `
     SELECT 
         o.order_id,
@@ -48,7 +50,7 @@ export async function getOrderDetails(
     WHERE o.order_id = ?
     `;
 
-  const rows: any[] = await db.all(query, [orderId]);
+  const rows: any[] =  db.all(query, [orderId]);
 
   if (!rows || rows.length === 0) {
     return null;
@@ -80,11 +82,11 @@ export async function getOrderDetails(
   return order;
 }
 
-export async function fetchCustomerOrders(
-  db: Database,
+export function fetchCustomerOrders(
+  db: DbType,
   customerId: number,
   limit: number = 10
-): Promise<any[]> {
+) {
   const query = `
     SELECT 
         o.order_id,
@@ -103,11 +105,11 @@ export async function fetchCustomerOrders(
     LIMIT ?
     `;
 
-  const rows = await db.all(query, [customerId, limit]);
+  const rows =  db.all(query, [customerId, limit]);
   return rows;
 }
 
-export async function getPendingOrders(db: Database): Promise<any[]> {
+export function getPendingOrders(db: DbType) {
   const query = `
     SELECT 
         o.order_id,
@@ -122,14 +124,14 @@ export async function getPendingOrders(db: Database): Promise<any[]> {
     ORDER BY o.order_date
     `;
 
-  const rows = await db.all(query, []);
+  const rows =  db.all(query, []);
   return rows;
 }
 
-export async function findOrdersByStatus(
-  db: Database,
+export function findOrdersByStatus(
+  db: DbType,
   status: string
-): Promise<any[]> {
+) {
   const query = `
     SELECT DISTINCT
         o.order_id,
@@ -149,14 +151,14 @@ export async function findOrdersByStatus(
     ORDER BY o.order_date DESC
     `;
 
-  const rows = await db.all(query, [status]);
+  const rows =  db.all(query, [status]);
   return rows;
 }
 
-export async function getRecentOrders(
-  db: Database,
+export function getRecentOrders(
+  db: DbType,
   days: number = 7
-): Promise<any[]> {
+) {
   const query = `
     SELECT DISTINCT
         o.order_id,
@@ -181,15 +183,15 @@ export async function getRecentOrders(
     ORDER BY o.order_date DESC
     `;
 
-  const rows = await db.all(query, [days]);
+  const rows =  db.all(query, [days]);
   return rows;
 }
 
-export async function fetchOrdersByDateRange(
-  db: Database,
+export function fetchOrdersByDateRange(
+  db: DbType,
   startDate: string,
   endDate: string
-): Promise<any[]> {
+) {
   const query = `
     SELECT 
         o.order_id,
@@ -206,14 +208,14 @@ export async function fetchOrdersByDateRange(
     ORDER BY o.order_date DESC
     `;
 
-  const rows = await db.all(query, [startDate, endDate]);
+  const rows =  db.all(query, [startDate, endDate]);
   return rows;
 }
 
-export async function getHighValueOrders(
-  db: Database,
+export function getHighValueOrders(
+  db: DbType,
   minAmount: number = 500
-): Promise<any[]> {
+) {
   const query = `
     WITH customer_ltv AS (
         SELECT 
@@ -245,6 +247,6 @@ export async function getHighValueOrders(
     ORDER BY o.total_amount DESC
     `;
 
-  const rows = await db.all(query, [minAmount]);
+  const rows =  db.all(query, [minAmount]);
   return rows;
 }

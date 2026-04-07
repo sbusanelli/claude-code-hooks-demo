@@ -1,4 +1,6 @@
-import { Database } from "sqlite";
+import Database from "better-sqlite3";
+
+type DbType = any;
 
 interface WarehouseInventoryItem {
   product_id: number;
@@ -84,10 +86,10 @@ interface InventoryMovement {
   turnover_rate: number;
 }
 
-export async function getWarehouseInventory(
-  db: Database,
+export function getWarehouseInventory(
+  db: DbType,
   warehouseId: number
-): Promise<WarehouseInventoryItem[]> {
+) {
   const query = `
     SELECT 
         i.product_id,
@@ -106,14 +108,14 @@ export async function getWarehouseInventory(
     ORDER BY i.quantity DESC
     `;
 
-  const rows: any[] = await db.all(query, [warehouseId]);
+  const rows: any[] =  db.all(query, [warehouseId]);
   return rows as WarehouseInventoryItem[];
 }
 
-export async function checkProductAvailability(
-  db: Database,
+export function checkProductAvailability(
+  db: DbType,
   productId: number
-): Promise<ProductAvailability[]> {
+) {
   const query = `
     SELECT 
         i.warehouse_id,
@@ -134,13 +136,13 @@ export async function checkProductAvailability(
     ORDER BY available_quantity DESC
     `;
 
-  const rows: any[] = await db.all(query, [productId]);
+  const rows: any[] =  db.all(query, [productId]);
   return rows as ProductAvailability[];
 }
 
-export async function findStockTransfersNeeded(
-  db: Database
-): Promise<StockTransfer[]> {
+export function findStockTransfersNeeded(
+  db: DbType
+) {
   const query = `
     WITH warehouse_sales AS (
         SELECT 
@@ -194,13 +196,13 @@ export async function findStockTransfersNeeded(
     ORDER BY low.units_sold_14d DESC, high.available_quantity DESC
     `;
 
-  const rows: any[] = await db.all(query, []);
+  const rows: any[] =  db.all(query, []);
   return rows as StockTransfer[];
 }
 
-export async function getInventoryValueByWarehouse(
-  db: Database
-): Promise<WarehouseInventoryValue[]> {
+export function getInventoryValueByWarehouse(
+  db: DbType
+) {
   const query = `
     SELECT 
         w.warehouse_id,
@@ -221,13 +223,13 @@ export async function getInventoryValueByWarehouse(
     ORDER BY total_inventory_value DESC
     `;
 
-  const rows: any[] = await db.all(query, []);
+  const rows: any[] =  db.all(query, []);
   return rows as WarehouseInventoryValue[];
 }
 
-export async function fetchReservedInventory(
-  db: Database
-): Promise<ReservedInventoryItem[]> {
+export function fetchReservedInventory(
+  db: DbType
+) {
   const query = `
     WITH reserved_orders AS (
         SELECT 
@@ -264,14 +266,14 @@ export async function fetchReservedInventory(
     ORDER BY i.reserved_quantity DESC
     `;
 
-  const rows: any[] = await db.all(query, []);
+  const rows: any[] =  db.all(query, []);
   return rows as ReservedInventoryItem[];
 }
 
-export async function getInventoryMovements(
-  db: Database,
+export function getInventoryMovements(
+  db: DbType,
   days: number = 30
-): Promise<InventoryMovement[]> {
+) {
   const query = `
     WITH recent_sales AS (
         SELECT 
@@ -327,6 +329,6 @@ export async function getInventoryMovements(
     ORDER BY i.last_restocked_at DESC
     `;
 
-  const rows: any[] = await db.all(query, [-days, -days]);
+  const rows: any[] =  db.all(query, [-days, -days]);
   return rows as InventoryMovement[];
 }

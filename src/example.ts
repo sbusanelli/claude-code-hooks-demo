@@ -1,5 +1,6 @@
-import { open } from "sqlite";
-import sqlite3 from "sqlite3";
+import Database from "better-sqlite3";
+
+type DbType = any;
 
 import { createSchema } from "./schema";
 import * as customerQueries from "./queries/customer_queries";
@@ -12,44 +13,41 @@ import * as analyticsQueries from "./queries/analytics_queries";
  * This file demonstrates how to use various query functions
  */
 
-async function exampleUsage() {
-  const db = await open({
-    filename: process.env.DB_FILENAME || "ecommerce.db",
-    driver: sqlite3.Database,
-  });
+function exampleUsage() {
+  const db = new Database(process.env.DB_FILENAME || "ecommerce.db");
 
   try {
     console.log("🗄️  Creating database schema...");
-    await createSchema(db);
+    createSchema(db);
     console.log("✅ Database schema created successfully");
 
     // Insert sample data for demonstration
-    await insertSampleData(db);
+    insertSampleData(db);
 
     console.log("\n📊 Running example queries...");
     
     // Customer examples
     console.log("\n=== Customer Queries ===");
-    const customer = await customerQueries.getCustomerByEmail(db, "john.doe@example.com");
+    const customer = customerQueries.getCustomerByEmail(db, "john.doe@example.com");
     console.log("👤 Customer by email:", customer?.first_name, customer?.last_name);
 
-    const activeCustomers = await customerQueries.fetchActiveCustomers(db, 30);
+    const activeCustomers = customerQueries.fetchActiveCustomers(db, 30);
     console.log(`👥 Active customers (last 30 days): ${activeCustomers.length}`);
 
     // Product examples
     console.log("\n=== Product Queries ===");
-    const electronics = await productQueries.findProductsByCategory(db, 1);
+    const electronics = productQueries.findProductsByCategory(db, 1);
     console.log(`🛍️  Electronics products: ${electronics.length}`);
 
-    const lowStock = await productQueries.getLowStockProducts(db, 10);
+    const lowStock =  productQueries.getLowStockProducts(db, 10);
     console.log(`⚠️  Low stock products: ${lowStock.length}`);
 
     // Order examples
     console.log("\n=== Order Queries ===");
-    const completedOrders = await orderQueries.findOrdersByStatus(db, "completed");
+    const completedOrders =  orderQueries.findOrdersByStatus(db, "completed");
     console.log(`📦 Completed orders: ${completedOrders.length}`);
 
-    const recentOrders = await orderQueries.getRecentOrders(db, 7);
+    const recentOrders =  orderQueries.getRecentOrders(db, 7);
     console.log(`🕐 Recent orders (7 days): ${recentOrders.length}`);
 
     // Analytics examples
@@ -57,14 +55,14 @@ async function exampleUsage() {
     const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
     const endDate = new Date().toISOString().split('T')[0];
     
-    const salesByCategory = await analyticsQueries.getSalesByCategory(db, startDate, endDate);
+    const salesByCategory =  analyticsQueries.getSalesByCategory(db, startDate, endDate);
     console.log(`📈 Sales by category (30 days): ${salesByCategory.length} categories`);
     
     salesByCategory.forEach(category => {
       console.log(`  ${category.category_name}: $${category.total_sales} (${category.order_item_count} orders)`);
     });
 
-    const trendingProducts = await analyticsQueries.findTrendingProducts(db, 30);
+    const trendingProducts =  analyticsQueries.findTrendingProducts(db, 30);
     console.log(`🔥 Trending products (30 days): ${trendingProducts.length}`);
 
     console.log("\n✅ All examples completed successfully");
@@ -72,7 +70,7 @@ async function exampleUsage() {
   } catch (error) {
     console.error("❌ Error in example usage:", error);
   } finally {
-    await db.close();
+     db.close();
   }
 }
 
@@ -126,7 +124,7 @@ async function insertSampleData(db: any) {
 
 // Run the example if this file is executed directly
 if (require.main === module) {
-  exampleUsage().catch(console.error);
+  exampleUsage();
 }
 
 export { exampleUsage, insertSampleData };

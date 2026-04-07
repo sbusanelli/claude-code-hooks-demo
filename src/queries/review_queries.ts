@@ -1,4 +1,6 @@
-import { Database } from "sqlite";
+import Database from "better-sqlite3";
+
+type DbType = any;
 
 interface Review {
   review_id: number;
@@ -8,11 +10,11 @@ interface Review {
   [key: string]: any;
 }
 
-export async function getProductReviews(
-  db: Database,
+export function getProductReviews(
+  db: DbType,
   productId: number,
   limit: number = 50
-): Promise<Review[]> {
+) {
   const query = `
     SELECT 
         r.review_id,
@@ -33,14 +35,14 @@ export async function getProductReviews(
     LIMIT ?
   `;
 
-  const rows = await db.all(query, [productId, limit]);
+  const rows = db.all(query, [productId, limit]);
   return rows as Review[];
 }
 
-export async function fetchCustomerReviews(
-  db: Database,
+export function fetchCustomerReviews(
+  db: DbType,
   customerId: number
-): Promise<Review[]> {
+) {
   const query = `
     SELECT 
         r.review_id,
@@ -59,11 +61,11 @@ export async function fetchCustomerReviews(
     ORDER BY r.review_date DESC
   `;
 
-  const rows = await db.all(query, [customerId, customerId]);
+  const rows = db.all(query, [customerId, customerId]);
   return rows as Review[];
 }
 
-export async function findUnverifiedReviews(db: Database): Promise<Review[]> {
+export function findUnverifiedReviews(db: DbType) {
   const query = `
     SELECT 
         r.review_id,
@@ -91,14 +93,14 @@ export async function findUnverifiedReviews(db: Database): Promise<Review[]> {
     ORDER BY r.review_date DESC
   `;
 
-  const rows = await db.all(query, []);
+  const rows = db.all(query, []);
   return rows as Review[];
 }
 
-export async function getHelpfulReviews(
-  db: Database,
+export function getHelpfulReviews(
+  db: DbType,
   minHelpful: number = 5
-): Promise<Review[]> {
+) {
   const query = `
     SELECT 
         r.review_id,
@@ -128,14 +130,14 @@ export async function getHelpfulReviews(
     ORDER BY r.helpful_count DESC, r.review_date DESC
   `;
 
-  const rows = await db.all(query, [minHelpful]);
+  const rows = db.all(query, [minHelpful]);
   return rows as Review[];
 }
 
-export async function fetchRecentReviews(
-  db: Database,
+export function fetchRecentReviews(
+  db: DbType,
   days: number = 7
-): Promise<Review[]> {
+) {
   const query = `
     SELECT 
         r.review_id,
@@ -158,14 +160,14 @@ export async function fetchRecentReviews(
     ORDER BY r.review_date DESC
   `;
 
-  const rows = await db.all(query, [days]);
+  const rows = db.all(query, [days]);
   return rows as Review[];
 }
 
-export async function getReviewsByRating(
-  db: Database,
+export function getReviewsByRating(
+  db: DbType,
   rating: number
-): Promise<Review[]> {
+) {
   const query = `
     SELECT 
         r.review_id,
@@ -189,6 +191,6 @@ export async function getReviewsByRating(
     ORDER BY r.review_date DESC
   `;
 
-  const rows = await db.all(query, [rating]);
+  const rows = db.all(query, [rating]);
   return rows as Review[];
 }

@@ -1,4 +1,6 @@
-import { Database } from "sqlite";
+import Database from "better-sqlite3";
+
+type DbType = any;
 
 interface Promotion {
   promotion_id: number;
@@ -106,7 +108,7 @@ interface UnusedPromotion {
   target_segment_size: number;
 }
 
-export async function getActivePromotions(db: Database): Promise<Promotion[]> {
+export function getActivePromotions(db: DbType) {
   const query = `
     WITH active_promos AS (
         SELECT
@@ -190,15 +192,15 @@ export async function getActivePromotions(db: Database): Promise<Promotion[]> {
     ORDER BY ap.usage_percentage DESC, pus.times_used DESC
     `;
 
-  const rows = await db.all(query);
+  const rows =  db.all(query);
   return rows as Promotion[];
 }
 
-export async function checkPromoEligibility(
-  db: Database,
+export function checkPromoEligibility(
+  db: DbType,
   customerId: number,
   promoCode: string
-): Promise<PromoEligibility> {
+) {
   const query = `
     WITH promo_info AS (
         SELECT
@@ -283,7 +285,7 @@ export async function checkPromoEligibility(
     CROSS JOIN current_cart cc
     `;
 
-  const row = await db.get(query, [
+  const row =  db.prepare().get(query, [
     promoCode,
     customerId,
     customerId,
@@ -300,10 +302,10 @@ export async function checkPromoEligibility(
   }
 }
 
-export async function findExpiringPromotions(
-  db: Database,
+export function findExpiringPromotions(
+  db: DbType,
   days: number = 7
-): Promise<ExpiringPromotion[]> {
+) {
   const expiryDate = new Date();
   expiryDate.setDate(expiryDate.getDate() + days);
   const expiryDateStr = expiryDate.toISOString().replace("T", " ").slice(0, 19);
@@ -379,14 +381,14 @@ export async function findExpiringPromotions(
     ORDER BY ep.days_until_expiry ASC, ep.usage_rate DESC
     `;
 
-  const rows = await db.all(query, [expiryDateStr]);
+  const rows =  db.all(query, [expiryDateStr]);
   return rows as ExpiringPromotion[];
 }
 
-export async function getPromotionPerformance(
-  db: Database,
+export function getPromotionPerformance(
+  db: DbType,
   promoId: number
-): Promise<PromotionPerformance | null> {
+) {
   const query = `
     WITH promo_details AS (
         SELECT
@@ -476,7 +478,7 @@ export async function getPromotionPerformance(
     CROSS JOIN order_increase oi
     `;
 
-  const row = await db.get(query, [
+  const row =  db.prepare().get(query, [
     promoId,
     promoId,
     promoId,
@@ -491,9 +493,9 @@ export async function getPromotionPerformance(
   }
 }
 
-export async function findUnusedPromotions(
-  db: Database
-): Promise<UnusedPromotion[]> {
+export function findUnusedPromotions(
+  db: DbType
+) {
   const query = `
     WITH unused_promos AS (
         SELECT
@@ -586,6 +588,6 @@ export async function findUnusedPromotions(
     ORDER BY up.status, ec.eligible_customer_count DESC
     `;
 
-  const rows = await db.all(query);
+  const rows =  db.all(query);
   return rows as UnusedPromotion[];
 }

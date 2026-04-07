@@ -1,4 +1,6 @@
-import { Database } from "sqlite";
+import Database from "better-sqlite3";
+
+type DbType = any;
 
 interface ProductDetails {
   product_id: number;
@@ -67,10 +69,10 @@ interface ProductSearchResult {
   inventory_status: string;
 }
 
-export async function getProductDetails(
-  db: Database,
+export function getProductDetails(
+  db: DbType,
   productId: number
-): Promise<ProductDetails | null> {
+) {
   const query = `
     SELECT 
         p.product_id,
@@ -89,14 +91,14 @@ export async function getProductDetails(
     GROUP BY p.product_id, p.name, p.sku, p.price, p.status, c.name
   `;
 
-  const result = await db.get(query, [productId]);
+  const result =  db.prepare().get(query, [productId]);
   return result as ProductDetails | null;
 }
 
-export async function findProductsByCategory(
-  db: Database,
+export function findProductsByCategory(
+  db: DbType,
   categoryId: number
-): Promise<ProductByCategory[]> {
+) {
   const query = `
     SELECT 
         p.product_id,
@@ -111,14 +113,14 @@ export async function findProductsByCategory(
     GROUP BY p.product_id, p.name, p.price
   `;
 
-  const results = await db.all(query, [categoryId]);
+  const results =  db.all(query, [categoryId]);
   return results as ProductByCategory[];
 }
 
-export async function getLowStockProducts(
-  db: Database,
+export function getLowStockProducts(
+  db: DbType,
   threshold: number = 20
-): Promise<LowStockProduct[]> {
+) {
   const query = `
     SELECT 
         p.product_id,
@@ -137,14 +139,14 @@ export async function getLowStockProducts(
     HAVING COALESCE(SUM(i.quantity), 0) < ?
   `;
 
-  const results = await db.all(query, [threshold]);
+  const results =  db.all(query, [threshold]);
   return results as LowStockProduct[];
 }
 
-export async function fetchProductBySku(
-  db: Database,
+export function fetchProductBySku(
+  db: DbType,
   sku: string
-): Promise<ProductBySku | null> {
+) {
   const query = `
     SELECT 
         p.product_id,
@@ -167,13 +169,13 @@ export async function fetchProductBySku(
     GROUP BY p.product_id, p.name, p.sku, p.price
   `;
 
-  const result = await db.get(query, [sku]);
+  const result =  db.prepare().get(query, [sku]);
   return result as ProductBySku | null;
 }
 
-export async function listAvailableProducts(
-  db: Database
-): Promise<AvailableProduct[]> {
+export function listAvailableProducts(
+  db: DbType
+) {
   const query = `
     SELECT 
         p.product_id,
@@ -191,13 +193,13 @@ export async function listAvailableProducts(
     HAVING COALESCE(SUM(i.quantity), 0) > 0
   `;
 
-  const results = await db.all(query, []);
+  const results =  db.all(query, []);
   return results as AvailableProduct[];
 }
 
-export async function getProductsNeedingReorder(
-  db: Database
-): Promise<ProductNeedingReorder[]> {
+export function getProductsNeedingReorder(
+  db: DbType
+) {
   const query = `
     SELECT 
         p.product_id,
@@ -218,14 +220,14 @@ export async function getProductsNeedingReorder(
     HAVING COALESCE(SUM(i.quantity), 0) < p.reorder_level
   `;
 
-  const results = await db.all(query, []);
+  const results =  db.all(query, []);
   return results as ProductNeedingReorder[];
 }
 
-export async function searchProductsByName(
-  db: Database,
+export function searchProductsByName(
+  db: DbType,
   searchTerm: string
-): Promise<ProductSearchResult[]> {
+) {
   const query = `
     SELECT 
         p.product_id,
@@ -244,6 +246,6 @@ export async function searchProductsByName(
     GROUP BY p.product_id, p.name, p.status, p.reorder_level
   `;
 
-  const results = await db.all(query, [searchTerm]);
+  const results =  db.all(query, [searchTerm]);
   return results as ProductSearchResult[];
 }

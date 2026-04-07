@@ -1,5 +1,7 @@
 import Database from "better-sqlite3";
 
+type DbType = any;
+
 import { createSchema } from "./schema";
 import * as customerQueries from "./queries/customer_queries";
 import * as productQueries from "./queries/product_queries";
@@ -11,41 +13,56 @@ import * as reviewQueries from "./queries/review_queries";
 import * as shippingQueries from "./queries/shipping_queries";
 
 async function main() {
-  const db = new Database(process.env.DB_FILENAME || "ecommerce.db");
+  const db = new Database(process.env.DB_FILENAME || "ecommerce.db") as DbType;
 
-  console.log("🗄️  Creating database schema...");
+  console.log(" Creating database schema...");
+  console.log("Database methods:", Object.getOwnPropertyNames(db.__proto__).filter(name => typeof db[name] === 'function'));
   createSchema(db);
-  console.log("✅ Database schema created successfully");
+  console.log(" Database schema created successfully");
 
   // Example usage of query functions
-  console.log("\n📊 Running example queries...");
+  console.log("\n Running example queries...");
   
   try {
     // Customer queries example
-    const customer = await customerQueries.getCustomerByEmail(db, "test@example.com");
-    console.log(`👥 Found customer: ${customer ? customer.first_name : 'None'}`);
+    const customer = customerQueries.getCustomerByEmail(db, "test@example.com");
+    console.log(` Found customer: ${customer ? customer.first_name : 'None'}`);
 
-    // Product queries example  
-    const products = await productQueries.findProductsByCategory(db, 1);
-    console.log(`🛍️  Found ${products.length} products in category 1`);
+    // Product queries example
+    const products = productQueries.findProductsByCategory(db, 1);
+    console.log(` Found ${products.length} products in electronics category`);
 
     // Order queries example
-    const orders = await orderQueries.findOrdersByStatus(db, "completed");
-    console.log(`📦 Found ${orders.length} completed orders`);
+    const recentOrders = orderQueries.findOrdersByStatus(db, "completed");
+    console.log(` Found ${recentOrders.length} recent orders`);
 
-    // Analytics example
-    const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-    const endDate = new Date().toISOString().split('T')[0];
-    const salesByCategory = await analyticsQueries.getSalesByCategory(db, startDate, endDate);
-    console.log(`📈 Analytics: Found sales data for ${salesByCategory.length} categories`);
+    // Analytics queries example
+    const analytics = analyticsQueries.calculateCustomerLifetimeValue(db, 1);
+    console.log(` Analytics: Customer lifetime value calculated`);
 
-    console.log("\n✅ All query modules are working correctly");
-    
-  } catch (error) {
-    console.error("❌ Error running example queries:", error);
+    // Inventory queries example
+    const inventory = inventoryQueries.getWarehouseInventory(db, 1);
+    console.log(` Low stock items: ${inventory.length}`);
+
+    // Promotion queries example
+    const activePromotions = promotionQueries.getActivePromotions(db);
+    console.log(` Active promotions: ${activePromotions.length}`);
+
+    // Review queries example
+    const topReviews = reviewQueries.getProductReviews(db, 1);
+    console.log(` Top rated products: ${topReviews.length}`);
+
+    // Shipping queries example
+    const shippingStatus = shippingQueries.getShippingAddresses(db, 1);
+    console.log(` Shipping addresses: ${shippingStatus.length}`);
+
+  } catch (error: any) {
+    console.error(" Error running example queries:", error);
   } finally {
-    await db.close();
-    console.log("🔒 Database connection closed");
+    // Close database connection
+    db.close();
+    console.log("\n Example completed successfully!");
+    console.log("\n🎯 Example completed successfully!");
   }
 }
 

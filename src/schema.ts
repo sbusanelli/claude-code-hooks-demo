@@ -1,6 +1,6 @@
 import Database from "better-sqlite3";
 
-export function createSchema(db: Database.Database) {
+export function createSchema(db: any) {
   // 1. Customers table
   db.exec(`
     CREATE TABLE IF NOT EXISTS customers (

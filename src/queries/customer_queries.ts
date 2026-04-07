@@ -1,45 +1,49 @@
 import Database from "better-sqlite3";
 
+type DbType = any;
+
 interface Address {
-  address_id: number;
+  id: number;
   customer_id: number;
-  street: string;
+  street_1: string;
+  street_2: string;
   city: string;
   state: string;
-  zip_code: string;
+  postal_code: string;
   country: string;
   is_default: number;
   [key: string]: any;
 }
 
 export function getCustomerByEmail(
-  db: Database.Database,
+  db: DbType,
   email: string
 ): any {
   const query = `
     SELECT 
         c.*,
-        sa.street AS shipping_street,
+        sa.street_1 AS shipping_street,
         sa.city AS shipping_city,
         sa.state AS shipping_state,
-        sa.zip_code AS shipping_zip,
+        sa.postal_code AS shipping_zip,
         sa.country AS shipping_country,
         MAX(o.order_date) as last_order_date
     FROM customers c
-    LEFT JOIN shipping_addresses sa ON c.customer_id = sa.customer_id AND sa.is_default = 1
+    LEFT JOIN addresses sa ON c.customer_id = sa.customer_id AND sa.is_default = 1
     LEFT JOIN orders o ON c.customer_id = o.customer_id
     WHERE c.email = ?
     GROUP BY c.customer_id
   `;
 
-  // db.get returns a Promise directly
-  return await db.get(query, [email]);
+  // better-sqlite3 is synchronous
+  const stmt = db.prepare(query);
+  return stmt.get([email]);
 }
 
-export async function fetchActiveCustomers(
-  db: Database,
+export function fetchActiveCustomers(
+  db: DbType,
   daysInactive: number = 90
-): Promise<any[]> {
+): any[] {
   const cutoffDate = new Date();
   cutoffDate.setDate(cutoffDate.getDate() - daysInactive);
   const cutoffDateStr = cutoffDate.toISOString().split("T")[0];
@@ -55,13 +59,14 @@ export async function fetchActiveCustomers(
     GROUP BY c.customer_id
   `;
 
-  return await db.all(query, [cutoffDateStr]);
+  const stmt = db.prepare(query);
+  return stmt.all([cutoffDateStr]);
 }
 
-export async function findCustomersBySegment(
-  db: Database,
+export function findCustomersBySegment(
+  db: DbType,
   segmentName: string
-): Promise<any[]> {
+): any[] {
   const query = `
     SELECT 
         c.customer_id,
@@ -78,18 +83,18 @@ export async function findCustomersBySegment(
     GROUP BY c.customer_id
   `;
 
-  return await db.all(query, [segmentName]);
+  const stmt = db.prepare(query);
+  return stmt.all([segmentName]);
 }
 
-export async function getCustomerProfile(
-  db: Database,
+export function getCustomerProfile(
+  db: DbType,
   customerId: number
-): Promise<any | null> {
+): any | null {
   // Get customer basic info
   const customerQuery = "SELECT * FROM customers WHERE customer_id = ?";
 
-  // Await the promise returned by db.get
-  const customer = await db.get(customerQuery, [customerId]);
+  const customer = db.prepare(customerQuery).get([customerId]);
 
   if (!customer) {
     return null;
@@ -97,20 +102,18 @@ export async function getCustomerProfile(
 
   // Get all addresses
   const addressesQuery = `
-    SELECT * FROM shipping_addresses 
+    SELECT * FROM addresses 
     WHERE customer_id = ?
     ORDER BY is_default DESC, address_id
   `;
 
-  // Await the promise returned by db.all
-  const addresses = (await db.all(addressesQuery, [customerId])) as Address[];
+  const addresses = db.prepare(addressesQuery).all([customerId]) as Address[];
 
   // Get order count
   const orderCountQuery =
     "SELECT COUNT(*) as order_count FROM orders WHERE customer_id = ?";
 
-  // Await the promise returned by db.get
-  const orderCountResult = await db.get(orderCountQuery, [customerId]);
+  const orderCountResult = db.prepare(orderCountQuery).get([customerId]);
 
   const orderCount = orderCountResult.order_count;
 
@@ -125,10 +128,9 @@ export async function getCustomerProfile(
     LIMIT 5
   `;
 
-  // Await the promise returned by db.all
-  const productRows = await db.all(productsQuery, [customerId]);
+  const productRows = db.prepare(productsQuery).all([customerId]);
 
-  const lastProducts = productRows.map((row) => row.product_name);
+  const lastProducts = productRows.map((row: any) => row.product_name);
 
   // Combine results
   const result = {
@@ -141,11 +143,11 @@ export async function getCustomerProfile(
   return result;
 }
 
-export async function searchCustomersByName(
-  db: Database,
+export function searchCustomersByName(
+  db: DbType,
   firstName?: string,
   lastName?: string
-): Promise<any[]> {
+): any[] {
   let query = `
     SELECT 
         c.*,
@@ -154,7 +156,7 @@ export async function searchCustomersByName(
         sa.city as default_city,
         sa.state as default_state
     FROM customers c
-    LEFT JOIN shipping_addresses sa ON c.customer_id = sa.customer_id AND sa.is_default = 1
+    LEFT JOIN addresses sa ON c.customer_id = sa.customer_id AND sa.is_default = 1
     WHERE 1=1
   `;
 
@@ -170,10 +172,11 @@ export async function searchCustomersByName(
     params.push(`%${lastName}%`);
   }
 
-  return await db.all(query, params);
+  const stmt = db.prepare(query);
+  return stmt.all(params);
 }
 
-export async function listCustomersWithReviews(db: Database): Promise<any[]> {
+export function listCustomersWithReviews(db: DbType): any[] {
   const query = `
     SELECT 
         c.*,
@@ -185,5 +188,6 @@ export async function listCustomersWithReviews(db: Database): Promise<any[]> {
     HAVING COUNT(r.review_id) > 0
   `;
 
-  return await db.all(query);
+  const stmt = db.prepare(query);
+  return stmt.all();
 }

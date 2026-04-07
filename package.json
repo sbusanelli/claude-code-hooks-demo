@@ -9,7 +9,9 @@
     "start": "npm run build && node dist/main.js",
     "dev": "tsx src/main.ts",
     "example": "tsx src/example.ts",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "sdk": "tsx sdk.ts",
     "clean": "rm -rf dist",
     "lint": "echo \"Linting not configured\"",
@@ -30,15 +32,17 @@
     "@anthropic-ai/claude-agent-sdk": "^0.1.5",
     "@tootallnate/once": "^3.0.1",
     "@types/node": "^24.0.13",
+    "better-sqlite3": "^9.2.2",
     "brace-expansion": "^5.0.5",
-    "sqlite": "^5.1.1",
-    "sqlite3": "^5.0.2",
     "tar": "^7.5.13",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   },
   "devDependencies": {
-    "@types/sqlite3": "^3.1.8"
+    "@types/better-sqlite3": "^7.6.8",
+    "@types/jest": "^30.0.0",
+    "jest": "^30.3.0",
+    "ts-jest": "^29.4.9"
   },
   "engines": {
     "node": ">=18.0.0"

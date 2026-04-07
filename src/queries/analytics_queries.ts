@@ -1,4 +1,6 @@
-import { Database } from "sqlite";
+import Database from "better-sqlite3";
+
+type DbType = any;
 
 interface CustomerLifetimeValue {
   customer_id: number;
@@ -121,10 +123,10 @@ interface TrendingProduct {
   repeat_customer_ratio: number;
 }
 
-export async function calculateCustomerLifetimeValue(
-  db: Database,
+export function calculateCustomerLifetimeValue(
+  db: DbType,
   customerId: number
-): Promise<CustomerLifetimeValue | {}> {
+) {
   const query = `
     SELECT
         c.id,
@@ -140,7 +142,7 @@ export async function calculateCustomerLifetimeValue(
     GROUP BY c.id
     `;
 
-  const result: any = await db.get(query, [customerId]);
+  const result: any =  db.prepare().get(query, [customerId]);
   if (!result) return {};
 
   const categoryQuery = `
@@ -158,7 +160,7 @@ export async function calculateCustomerLifetimeValue(
       LIMIT 5
       `;
 
-  const categories: any[] = await db.all(categoryQuery, [customerId]);
+  const categories: any[] =  db.all(categoryQuery, [customerId]);
 
   const preferredCategories = categories.map((row) => ({
     category: row.category_name,
@@ -178,11 +180,11 @@ export async function calculateCustomerLifetimeValue(
   };
 }
 
-export async function getSalesByCategory(
-  db: Database,
+export function getSalesByCategory(
+  db: DbType,
   startDate: string,
   endDate: string
-): Promise<CategorySales[]> {
+) {
   const query = `
     SELECT
         cat.id as category_id,
@@ -200,7 +202,7 @@ export async function getSalesByCategory(
     ORDER BY total_sales DESC
     `;
 
-  const categories: any[] = await db.all(query, [startDate, endDate]);
+  const categories: any[] =  db.all(query, [startDate, endDate]);
 
   const results: CategorySales[] = [];
 
@@ -220,7 +222,7 @@ export async function getSalesByCategory(
         LIMIT 1
         `;
 
-    const topProduct: any = await db.get(topProductQuery, [
+    const topProduct: any =  db.prepare().get(topProductQuery, [
       category.category_id,
       startDate,
       endDate,
@@ -240,7 +242,7 @@ export async function getSalesByCategory(
         ORDER BY segment_sales DESC
         `;
 
-    const segments: any[] = await db.all(segmentQuery, [
+    const segments: any[] =  db.all(segmentQuery, [
       category.category_id,
       startDate,
       endDate,
@@ -272,10 +274,10 @@ export async function getSalesByCategory(
   return results;
 }
 
-export async function findRepeatCustomers(
-  db: Database,
+export function findRepeatCustomers(
+  db: DbType,
   minOrders: number = 2
-): Promise<RepeatCustomer[]> {
+) {
   const query = `
     WITH customer_orders AS (
         SELECT
@@ -311,7 +313,7 @@ export async function findRepeatCustomers(
     ORDER BY co.total_spent DESC
     `;
 
-  const customers: any[] = await db.all(query, [minOrders]);
+  const customers: any[] =  db.all(query, [minOrders]);
 
   const results: RepeatCustomer[] = customers.map((customer) => {
     const orderDates = customer.order_dates.split(",");
@@ -342,10 +344,10 @@ export async function findRepeatCustomers(
   return results;
 }
 
-export async function getProductPerformance(
-  db: Database,
+export function getProductPerformance(
+  db: DbType,
   productId: number
-): Promise<ProductPerformance | {}> {
+) {
   const productQuery = `
     SELECT
         p.id,
@@ -366,7 +368,7 @@ export async function getProductPerformance(
     GROUP BY p.id
     `;
 
-  const product: any = await db.get(productQuery, [productId]);
+  const product: any =  db.prepare().get(productQuery, [productId]);
   if (!product) return {};
 
   const reviewQuery = `
@@ -379,7 +381,7 @@ export async function getProductPerformance(
       WHERE product_id = ?
       `;
 
-  const reviews: any = await db.get(reviewQuery, [productId]);
+  const reviews: any =  db.prepare().get(reviewQuery, [productId]);
 
   const inventoryQuery = `
       SELECT
@@ -389,7 +391,7 @@ export async function getProductPerformance(
       WHERE product_id = ?
       `;
 
-  const inventory: any = await db.get(inventoryQuery, [productId]);
+  const inventory: any =  db.prepare().get(inventoryQuery, [productId]);
 
   const turnoverQuery = `
       SELECT
@@ -400,7 +402,7 @@ export async function getProductPerformance(
       AND o.order_date >= date('now', '-90 days')
       `;
 
-  const turnover: any = await db.get(turnoverQuery, [productId]);
+  const turnover: any =  db.prepare().get(turnoverQuery, [productId]);
 
   const currentStock = inventory?.current_stock || 0;
   const sold90d = turnover?.quantity_sold_90d || 0;
@@ -421,7 +423,7 @@ export async function getProductPerformance(
       ORDER BY segment_revenue DESC
       `;
 
-  const segments: any[] = await db.all(segmentQuery, [productId]);
+  const segments: any[] =  db.all(segmentQuery, [productId]);
 
   const customerSegments = segments.map((row) => ({
     segment: row.segment,
@@ -464,10 +466,10 @@ export async function getProductPerformance(
   };
 }
 
-export async function calculateSegmentMetrics(
-  db: Database,
+export function calculateSegmentMetrics(
+  db: DbType,
   segmentName: string
-): Promise<SegmentMetrics | { segment: string; customer_count: number }> {
+) {
   const segmentQuery = `
     SELECT
         COUNT(DISTINCT c.id) as customer_count,
@@ -480,7 +482,7 @@ export async function calculateSegmentMetrics(
     WHERE c.segment = ?
     `;
 
-  const segmentStats: any = await db.get(segmentQuery, [segmentName]);
+  const segmentStats: any =  db.prepare().get(segmentQuery, [segmentName]);
   if (!segmentStats || segmentStats.customer_count === 0) {
     return { segment: segmentName, customer_count: 0 };
   }
@@ -510,7 +512,7 @@ export async function calculateSegmentMetrics(
       LIMIT 10
       `;
 
-  const topProducts: any[] = await db.all(topProductsQuery, [segmentName]);
+  const topProducts: any[] =  db.all(topProductsQuery, [segmentName]);
 
   const productsList = topProducts.map((row) => ({
     product_id: row.id,
@@ -536,7 +538,7 @@ export async function calculateSegmentMetrics(
       LIMIT 5
       `;
 
-  const shippingStates: any[] = await db.all(shippingQuery, [segmentName]);
+  const shippingStates: any[] =  db.all(shippingQuery, [segmentName]);
 
   const preferredStates = shippingStates.map((row) => ({
     state: row.shipping_state,
@@ -559,10 +561,10 @@ export async function calculateSegmentMetrics(
   };
 }
 
-export async function findTrendingProducts(
-  db: Database,
+export function findTrendingProducts(
+  db: DbType,
   days: number = 30
-): Promise<TrendingProduct[]> {
+) {
   const midpoint = Math.floor(days / 2);
 
   const query = `
@@ -640,7 +642,7 @@ export async function findTrendingProducts(
     ORDER BY growth_rate DESC
     `;
 
-  const products: any[] = await db.all(query, [
+  const products: any[] =  db.all(query, [
     days,
     midpoint,
     midpoint,

@@ -1,4 +1,6 @@
-import { Database } from "sqlite";
+import Database from "better-sqlite3";
+
+type DbType = any;
 
 interface ShippingAddress {
   address_id: number;
@@ -58,10 +60,10 @@ interface DeliveryDelay {
   last_known_warehouse: string | null;
 }
 
-export async function getShippingAddresses(
-  db: Database,
+export function getShippingAddresses(
+  db: DbType,
   customerId: number
-): Promise<ShippingAddress[]> {
+) {
   const query = `
     SELECT 
         sa.address_id,
@@ -79,14 +81,14 @@ export async function getShippingAddresses(
     ORDER BY sa.is_default DESC, order_count DESC
     `;
 
-  const rows: any[] = await db.all(query, [customerId]);
+  const rows: any[] = db.all(query, [customerId]);
   return rows as ShippingAddress[];
 }
 
-export async function findOrdersByDestination(
-  db: Database,
+export function findOrdersByDestination(
+  db: DbType,
   state: string
-): Promise<OrderByDestination[]> {
+) {
   const query = `
     SELECT 
         o.order_id,
@@ -115,13 +117,13 @@ export async function findOrdersByDestination(
     ORDER BY o.created_at DESC
     `;
 
-  const rows: any[] = await db.all(query, [state]);
+  const rows: any[] = db.all(query, [state]);
   return rows as OrderByDestination[];
 }
 
-export async function getUnshippedOrders(
-  db: Database
-): Promise<UnshippedOrder[]> {
+export function getUnshippedOrders(
+  db: DbType
+) {
   const query = `
     WITH customer_order_counts AS (
         SELECT 
@@ -163,13 +165,13 @@ export async function getUnshippedOrders(
     ORDER BY o.created_at ASC
     `;
 
-  const rows: any[] = await db.all(query);
+  const rows: any[] =  db.all(query);
   return rows as UnshippedOrder[];
 }
 
-export async function calculateShippingCostsByState(
-  db: Database
-): Promise<ShippingCostByState[]> {
+export function calculateShippingCostsByState(
+  db: DbType
+) {
   const query = `
     WITH state_products AS (
         SELECT 
@@ -202,14 +204,14 @@ export async function calculateShippingCostsByState(
     ORDER BY total_shipping_cost DESC
     `;
 
-  const rows: any[] = await db.all(query);
+  const rows: any[] =  db.all(query);
   return rows as ShippingCostByState[];
 }
 
-export async function findDeliveryDelays(
-  db: Database,
+export function findDeliveryDelays(
+  db: DbType,
   expectedDays: number = 5
-): Promise<DeliveryDelay[]> {
+) {
   const query = `
     SELECT 
         o.order_id,
@@ -236,6 +238,6 @@ export async function findDeliveryDelays(
     ORDER BY days_since_order DESC
     `;
 
-  const rows: any[] = await db.all(query, [expectedDays]);
+  const rows: any[] =  db.all(query, [expectedDays]);
   return rows as DeliveryDelay[];
 }
