@@ -1,0 +1,18 @@
+# Code Owners for claude-code-hooks-demo repository
+
+# Default code owner for the entire repository
+*       sbusanelli@gmail.com
+
+# Optional: Specific owners for different paths
+# Documentation
+*.md    sbusanelli@gmail.com
+
+# Source code
+src/    sbusanelli@gmail.com
+hooks/  sbusanelli@gmail.com
+scripts/ sbusanelli@gmail.com
+
+# Configuration files
+*.json  sbusanelli@gmail.com
+*.ts    sbusanelli@gmail.com
+*.js    sbusanelli@gmail.com
