@@ -168,7 +168,7 @@ graph TB
     subgraph "Read Hook Protection"
         RPATH[Secret File Patterns]
         RPATH --> RENV[.env files]
-        RPATH --> RCERT[Certificates (.pem, .key)]
+        RPATH --> RCERT["Certificates (.pem, .key)"]
         RPATH --> RSSH[SSH keys]
         RPATH --> RCONFIG[Config files]
         RPATH --> RCLOUD[Cloud credentials]
