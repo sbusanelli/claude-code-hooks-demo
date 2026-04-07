@@ -49,6 +49,18 @@ The hooks detect various secret formats:
 └── .gitignore           # Enhanced with secret file patterns
 ```
 
+## Architecture
+
+For a comprehensive understanding of the project structure and component interactions, see [**ARCHITECTURE.md**](./ARCHITECTURE.md) which includes:
+
+- 🏗️ High-level architecture diagrams
+- 🔒 Security hook flow visualization  
+- 📊 Data flow and component relationships
+- 🛡️ Security pattern detection
+- 🗂️ Complete project structure overview
+- 🔄 Hook execution sequences
+- 🚀 Deployment architecture
+
 ## Installation and Setup
 
 ```bash
