@@ -34,7 +34,7 @@
     "@types/node": "^24.0.13",
     "better-sqlite3": "^9.2.2",
     "brace-expansion": "^5.0.6",
-    "tar": "^7.5.13",
+    "tar": "^7.5.15",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   },
