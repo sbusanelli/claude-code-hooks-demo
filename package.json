@@ -31,7 +31,6 @@
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "^0.1.5",
     "@tootallnate/once": "^3.0.1",
-    "@types/node": "^24.0.13",
     "better-sqlite3": "^9.2.2",
     "brace-expansion": "^5.0.6",
     "tar": "^7.5.13",
@@ -41,6 +40,7 @@
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.8",
     "@types/jest": "^30.0.0",
+    "@types/node": "^24.12.4",
     "jest": "^30.3.0",
     "ts-jest": "^29.4.9"
   },
